@@ -20,7 +20,18 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'news_con' => $this->news_con,
-            'created_at' => date_format($this->created_at, 'Y-m-d H:m:s')
+            'author' => $this->author,
+            'writer' => $this->whenLoaded('writer'),
+            'comments' => $this->whenLoaded('comments', function() {
+                return collect($this->comments)->each(function($comment){
+                    $comment->commentator;
+                    return $comment;
+                });
+            }),
+            'created_at' => date_format($this->created_at, 'Y-m-d H:m:s'),
+            'comments_total' => $this->whenLoaded('comments', function(){
+                return $this->comments->count();
+            }),
         ];
     }
 }

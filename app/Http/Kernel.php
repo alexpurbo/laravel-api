@@ -63,5 +63,7 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'pemilik-postingan' => \App\Http\Middleware\PostOwnerValidation::class,
+        'pemilik-komentar' => \App\Http\Middleware\CommentOwnerValidation::class,
     ];
 }
