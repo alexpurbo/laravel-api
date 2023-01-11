@@ -31,6 +31,7 @@ class PostDetailResource extends JsonResource
             'comments_total' => $this->whenLoaded('comments', function(){
                 return $this->comments->count();
             }),
+            'image' => $this->image,
         ];
     }
 }

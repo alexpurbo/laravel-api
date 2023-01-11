@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -27,11 +28,23 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        
         $validated = $request->validate([
             'title' => 'required|max:255',
             'news_con' => 'required',
         ]);
 
+        $filedata = null;
+        if($request->file){
+            // Disini untuk upload file
+            $filename = $this->generateRandomString();
+            $extension = $request->file->extension();
+
+            Storage::putFileAs('img', $request->file,  $filename.'.'.$extension);
+            $filedata = $filename.'.'.$extension;
+            
+        }
+        $request['image'] = $filedata;
         $request['author'] = Auth::user()->id;
         $post = Post::create($request->all());
 
@@ -59,5 +72,15 @@ class PostController extends Controller
         $post->delete();
 
         return new PostDetailResource($post->loadMissing('writer:id,username'));
+    }
+
+    function generateRandomString($length = 30) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 }
